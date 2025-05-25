@@ -4,12 +4,16 @@
   "description": "Trang web chia sẻ ảnh, GGPhotos-WebApp",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon index.js"
+    "test": "nodemon server.js"
   },
   "author": "Nguyễn Khánh Thụy - Ngô Hoàng Nam",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "firebase": "^11.8.1"
+    "firebase": "^11.8.1",
+    "firebase-admin": "^13.4.0",
+    "multer": "^2.0.0"
   }
 }
