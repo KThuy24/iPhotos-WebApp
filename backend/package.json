@@ -1,0 +1,15 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Trang web chia sẻ ảnh, GGPhotos-WebApp",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "author": "Nguyễn Khánh Thụy - Ngô Hoàng Nam",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "firebase": "^11.8.1"
+  }
+}
