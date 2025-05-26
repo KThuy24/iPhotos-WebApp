@@ -9,7 +9,7 @@ require('dotenv').config();
 connectDB(); // chạy function kết nối mongoosedb trong config
 
 const app = express();
-//Cấu hình CORS
+//Cấu hình cors
 app.use(cors({
     origin: "http://localhost:3000", // Cho phép React frontend (localhost:3000) gọi API
     methods: ["GET", "POST", "PUT", "DELETE"], // Cho phép các phương thức HTTP
