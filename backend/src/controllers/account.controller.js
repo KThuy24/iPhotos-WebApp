@@ -1,7 +1,7 @@
-const accountModel = require('../models/account.model');
+const accountModel = require('../models/account.model.js');
 const bcrypt = require("bcrypt"); 
 const jwt = require("jsonwebtoken");
-const defaultAvatar = require("../config/defaultAvatar");
+const defaultAvatar = require("../config/defaultAvatar.js");
 const { sendEmail_ForgotPassword } = require("../config/sendEmail.js"); 
 
 // hàm đăng ký

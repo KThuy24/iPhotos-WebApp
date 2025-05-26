@@ -3,7 +3,7 @@ const cors = require('cors');
 const connectDB = require("./src/config/database.js"); 
 const bodyParser = require("body-parser"); 
 const cookieParser = require("cookie-parser"); 
-const authRouter = require('./src/routers/auth.router.js');
+const accountRouter = require('./src/routers/account.router.js');
 //--------------------------------------------------------------//
 require('dotenv').config();
 connectDB(); // chạy function kết nối mongoosedb trong config
@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
 //-----------------------------ROUTER---------------------------------//
-app.use('/api/auth', authRouter);
+app.use('/api/auth', accountRouter);
 //--------------------------------------------------------------//
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Máy chủ đang chạy ở cổng ${PORT}`));
