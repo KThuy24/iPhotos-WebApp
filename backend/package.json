@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Trang web chia sẻ ảnh, GGPhotos-WebApp",
+  "description": "Trang web chia sẻ ảnh, iPhotos-WebApp",
   "main": "index.js",
   "scripts": {
     "test": "nodemon server.js"
