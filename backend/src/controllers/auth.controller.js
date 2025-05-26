@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const defaultAvatar = require("../config/defaultAvatar");
 const { sendEmail_ForgotPassword } = require("../config/sendEmail.js"); 
 
+// hàm đăng ký
 const register = async (req, res) => {
   const { fullname, email, username, password, role} = req.body;
 
@@ -64,7 +65,8 @@ const register = async (req, res) => {
     console.log(error);
   }
 };
-  
+
+// hàm đăng nhập
 const login = async (req, res) => {
   const { email, username, password } = req.body;
   try{
@@ -138,7 +140,8 @@ const login = async (req, res) => {
     console.log(error);
   }
 };
-  
+
+// hàm quên mật khẩu
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -186,7 +189,8 @@ const forgotPassword = async (req, res) => {
     console.log(error);
   }
 };
-  
+
+// hàm khôi phục mật khẩu
 const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;

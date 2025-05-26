@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 //-------------------------------SEND EMAIL FORGOTPASSWORD----------------------------------------//
 exports.sendEmail_ForgotPassword = async (to, resetLink) => {
     const transporter = nodemailer.createTransport({
-      // Cấu hình Nodemailer
+      // cấu hình Nodemailer
       service: "gmail",
       auth: {
         user: process.env.MAIL_ACCOUNT,
@@ -11,7 +11,7 @@ exports.sendEmail_ForgotPassword = async (to, resetLink) => {
       },
     });
   
-    // Nội dung email
+    // nội dung của email
     const mailOptions = {
       from: process.env.MAIL_ACCOUNT,
       to,
@@ -30,7 +30,7 @@ exports.sendEmail_ForgotPassword = async (to, resetLink) => {
       `,
     };
     try {
-      await transporter.sendMail(mailOptions); // Gửi email
+      await transporter.sendMail(mailOptions); // thực hiện gửi email
     } catch (err) {
       console.error("Lỗi khi gửi email:", err);
       throw new Error("Lỗi khi gửi email khôi phục mật khẩu");

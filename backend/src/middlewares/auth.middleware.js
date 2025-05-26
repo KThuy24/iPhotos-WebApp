@@ -1,19 +1,34 @@
-const admin = require('../config/firebase');
+const jwt = require("jsonwebtoken");
 
-const verifyToken = async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Token bị thiếu hoặc không hợp lệ' });
+// hàm xác thực người dùng
+const authenticate = async (req, res, next) => {
+  try {
+    const token = req.cookies.token; // lấy token từ cookie trong trình duyệt
+    if (token) {
+      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          return res.status(401).json("Token đã hết hạn");
+        }
+        req.data = user;
+        next();
+      });
+    } else {
+      return res.status(401).json("Người dùng chưa được xác thực");
     }
-  
-    const idToken = authHeader.split(' ')[1];
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      req.user = decodedToken; // chứa uid, email, name, v.v.
-      next();
-    } catch (error) {
-      return res.status(401).json({ error: 'Token không hợp lệ hoặc đã hết hạn' });
-    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Lỗi xác thực người dùng" });
+  }
 };
-  
-module.exports = verifyToken;
+// hàm phân quyền
+const authorize = (role) => (req, res, next) => {
+  authenticate(req, res, () => {
+    if (!role.includes(req.data.role)) {
+      return res.status(404).json({ message: "Quyền truy cập bị từ chối" }); // báo lỗi
+    } else {
+      next();
+    }
+  });
+};
+
+module.exports = authenticate, authorize;
