@@ -4,6 +4,10 @@ const connectDB = require("./src/config/database.js");
 const bodyParser = require("body-parser"); 
 const cookieParser = require("cookie-parser"); 
 const accountRouter = require('./src/routers/account.router.js');
+const photoRouter = require('./src/routers/photo.router.js');
+const albumRouter = require('./src/routers/album.router.js');
+const commentRouter = require('./src/routers/comment.router.js');
+const likeRouter = require('./src/routers/like.router.js');
 //--------------------------------------------------------------//
 require('dotenv').config();
 connectDB(); // chạy function kết nối mongoosedb trong config
@@ -24,6 +28,10 @@ app.use(cookieParser());
 app.use(express.json());
 //-----------------------------ROUTER---------------------------------//
 app.use('/api/auth', accountRouter);
+app.use('/api/photo', photoRouter);
+app.use('/api/album', albumRouter);
+app.use('/api/comment', commentRouter);
+app.use('/api/like', likeRouter);
 //--------------------------------------------------------------//
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Máy chủ đang chạy ở cổng ${PORT}`));

@@ -12,4 +12,4 @@ const accountSchema = new mongoose.Schema({
     createdAt:{ type: Date, default: Date.now } // thời gian tạo
 });
 
-module.exports = mongoose.model("accountModel", accountSchema);
+module.exports = mongoose.model("Account", accountSchema);
