@@ -1,0 +1,18 @@
+/* CSS cho ImageCard để đảm bảo ảnh hiển thị đúng */
+.card-img-top-custom { /* Chúng ta sẽ dùng class này thay vì sửa trực tiếp card-img-top của Bootstrap */
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Hoặc 4 / 3, hoặc 1 / 1 tùy bạn muốn tỷ lệ nào */
+  object-fit: cover;    /* Giữ lại để ảnh lấp đầy và cắt nếu cần */
+  /* max-height: 500px; */ /* Bạn có thể bỏ hoặc giữ lại tùy theo thiết kế */
+                          /* Nếu giữ lại, nó sẽ giới hạn chiều cao ngay cả khi aspect-ratio cho phép cao hơn */
+}
+
+/* Nếu bạn muốn ảnh đại diện (uploaderAvatar) cũng có kích thước nhất định */
+.uploader-avatar-custom {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%; /* Đảm bảo nó luôn tròn */
+}
+
+/* Bạn có thể thêm các style tùy chỉnh khác ở đây */

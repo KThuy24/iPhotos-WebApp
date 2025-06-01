@@ -8,5 +8,6 @@ router.post('/create', authenticate, photoController.createPhoto);
 router.delete('/delete/:id', authenticate, photoController.deletePhoto);
 router.get('/list', photoController.allPhoto);
 router.get('/detail/:id', photoController.detailPhoto);
+router.get('/trendingPhotos', photoController.trendingPhotos);
 
 module.exports = router;

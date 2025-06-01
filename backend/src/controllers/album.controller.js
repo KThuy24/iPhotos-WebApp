@@ -263,16 +263,38 @@ const removePhotoFromAlbum = async (req, res) => {
 };
 
 // hàm lấy danh sách album
+// const allAlbum = async (req, res) => {
+//     try {
+//         const albums = await Album.find();
+
+//         if(!albums){
+//             return res.status(404).json({ 
+//                 success: false,
+//                 message: "Danh sách album rỗng !" 
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Lấy danh sách album thành công !",
+//             albums
+//         });
+//     } catch (error) {
+//         res.status(500).json({ 
+//             success: false,
+//             message: "Lỗi lấy danh sách album, vui lòng kiểm tra lại Server !", 
+//             error 
+//         });
+//         console.log(error);
+//     }
+// };
+
 const allAlbum = async (req, res) => {
     try {
-        const albums = await Album.find();
-
-        if(!albums){
-            return res.status(404).json({ 
-                success: false,
-                message: "Danh sách album rỗng !" 
-            });
-        }
+        const albums = await Album.find()
+                                  .sort({ createdAt: -1 })
+                                  .populate('account', 'username avatar fullname')
+                                  .populate('coverPhoto', 'url'); // Lấy url của ảnh bìa
 
         return res.status(200).json({
             success: true,
@@ -290,10 +312,44 @@ const allAlbum = async (req, res) => {
 };
 
 // hàm lấy thông tin chi tiết 1 album
+// const detailAlbum = async (req, res) => {
+//     try {
+//         const album = await Album.findById(req.params.id);
+
+//         if(!album){
+//             return res.status(404).json({ message: "Không tìm thấy album !" });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Lấy thông tin chi tiết album thành công !",
+//             album
+//         });
+//     } catch (error) {
+//         res.status(500).json({ 
+//             success: false,
+//             message: "Lỗi lấy thông tin chi tiết album, vui lòng kiểm tra lại Server !", 
+//             error 
+//         });
+//         console.log(error);
+//     }
+// };
+
+
 const detailAlbum = async (req, res) => {
     try {
-        const album = await Album.findById(req.params.id);
-
+        const album = await Album.findById(req.params.id)
+                                 .populate('account', 'username avatar fullname')
+                                 .populate('coverPhoto', 'url title') // Lấy url và title của ảnh bìa
+                                 .populate({
+                                     path: 'photos',
+                                     select: 'url title description createdAt', // Chọn các trường cần thiết của ảnh trong album
+                                     options: { sort: { createdAt: -1 } }, // Sắp xếp ảnh trong album
+                                     populate: { // Populate người đăng của từng ảnh trong album
+                                         path: 'account',
+                                         select: 'username avatar'
+                                     }
+                                 });
         if(!album){
             return res.status(404).json({ message: "Không tìm thấy album !" });
         }
@@ -312,6 +368,9 @@ const detailAlbum = async (req, res) => {
         console.log(error);
     }
 };
+
+
+
 
 module.exports = {
     createAlbum,

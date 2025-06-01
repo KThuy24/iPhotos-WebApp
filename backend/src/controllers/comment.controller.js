@@ -36,12 +36,19 @@ const createComment = async (req, res) => {
         });
 
         await newComment.save();
+    const populatedComment = await Comment.findById(newComment._id)
+                                          .populate("account", "username avatar fullname");
 
-        return res.status(200).json({
-            success: true,
-            message: "Gửi bình luận thành công !",
-            comment: newComment
-        })
+    return res.status(200).json({
+        success: true,
+        message: "Gửi bình luận thành công !",
+        comment: populatedComment // Trả về comment đã được populate
+    })
+        // return res.status(200).json({
+        //     success: true,
+        //     message: "Gửi bình luận thành công !",
+        //     comment: newComment
+        // })
     }catch(error){
         res.status(500).json({
             success: false,
@@ -140,15 +147,19 @@ const deleteComment = async (req, res) => {
 
 // hàm lấy danh sách bình luận
 const allComment = async (req, res) => {
-    try{
-        const comments = await Comment.find().populate("account").populate("photo");
-
-        if(!comments){
-            return res.status(404).json({
-                success: false,
-                message: "Danh sách bình luận rỗng !"
-            })
+    try {
+        // Có thể bạn muốn lấy comment cho một photo cụ thể
+        const photoId = req.query.photoId;
+        let query = {};
+        if (photoId) {
+            query.photo = photoId;
         }
+
+        const comments = await Comment.find(query)
+                                      .sort({ createdAt: -1 }) // Comment mới nhất lên đầu
+                                      .populate("account", "username avatar fullname")
+                                      .populate("photo", "title"); // Chỉ lấy title của photo liên quan
+
 
         return res.status(200).json({
             success: true,

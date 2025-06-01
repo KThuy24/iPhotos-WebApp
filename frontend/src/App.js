@@ -1,70 +1,127 @@
 // src/App.js
-import React, { useState, useEffect } from 'react'; // Thêm useState và useEffect
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Thêm Navigate
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
-import RegisterPage from './pages/RegisterPage'; // Import trang đăng ký
+import RegisterPage from './pages/RegisterPage';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import './styles/custom.css'; 
+// import TrendingPage from './pages/TrendingPage';
+// import UploadPage from './pages/UploadPage';
+// import AdminUsersPage from './pages/AdminUsersPage';
 
+
+// Component Layout chung để bao bọc các trang cần Navbar và Footer
+function MainLayout({ children, isLoggedIn, userName, isAdmin, onLogout }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        userName={userName}
+        isAdmin={isAdmin}
+        onLogout={onLogout}
+      />
+      <main className="flex-grow-1 container py-4"> 
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Hàm này sẽ được gọi từ Login.js sau khi đăng nhập thành công
   const handleLoginSuccess = (userData) => {
     console.log("App.js: User logged in successfully", userData);
     setCurrentUser(userData);
-    // Lưu thông tin người dùng vào localStorage để duy trì đăng nhập
-    if (userData) { // Đảm bảo userData không phải là null/undefined
-        localStorage.setItem('userData', JSON.stringify(userData));
+    if (userData) {
+      localStorage.setItem('userData', JSON.stringify(userData));
+      // Token nên được lưu riêng nếu API trả về token và userData riêng
+      // Ví dụ: localStorage.setItem('authToken', userData.token); (nếu token nằm trong userData)
     }
   };
 
-  // Hàm này sẽ được gọi từ Navbar (thông qua HomePage) khi người dùng đăng xuất
   const handleLogout = () => {
     console.log("App.js: User logged out");
     setCurrentUser(null);
-    // Xóa thông tin người dùng khỏi localStorage
     localStorage.removeItem('userData');
-    // Việc chuyển hướng sau khi logout nên được xử lý bởi component gọi hàm logout
-    // ví dụ: Navbar sẽ dùng useNavigate để chuyển về /login
+    localStorage.removeItem('authToken'); // Xóa cả token nếu có
   };
 
-  // useEffect sẽ chạy một lần khi component App được mount
-  // để kiểm tra xem có thông tin người dùng nào đã lưu trong localStorage không
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
+    // Cũng nên kiểm tra token nếu bạn dùng token riêng
+    // const storedToken = localStorage.getItem('authToken');
+    if (storedUserData ) {
       try {
         const userData = JSON.parse(storedUserData);
         setCurrentUser(userData);
         console.log("App.js: User data loaded from localStorage:", userData);
       } catch (error) {
         console.error("App.js: Error parsing user data from localStorage", error);
-        // Nếu dữ liệu bị hỏng, xóa nó khỏi localStorage
         localStorage.removeItem('userData');
+        // localStorage.removeItem('authToken');
       }
     }
-  }, []); // Mảng rỗng đảm bảo useEffect chỉ chạy một lần sau khi mount
+  }, []);
+
+  // Tính toán các props cho Navbar
+  const isLoggedIn = !!currentUser; // True nếu currentUser có giá trị, ngược lại là false
+  const isAdmin = currentUser?.role === 'admin';
+
+  const userName = currentUser?.username || currentUser?.name || 'User';
+
+  console.log("App.js - isLoggedIn:", isLoggedIn);
+  console.log("App.js - isAdmin:", isAdmin);
+  console.log("App.js - currentUser:", currentUser);
+
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* Route cho trang Login không dùng MainLayout */}
         <Route
           path="/login"
-          element={<Login onLoginSuccess={handleLoginSuccess} />}
+          element={isLoggedIn ? <Navigate to="/" /> : <Login onLoginSuccess={handleLoginSuccess} />}
         />
+        {/* Route cho trang Register không dùng MainLayout (hoặc dùng nếu Navbar trên RegisterPage là Navbar chung) */}
         <Route
-          path="/" // Route cho trang chủ
-          element={<HomePage currentUser={currentUser} onLogout={handleLogout} />}
+          path="/register"
+          element={isLoggedIn ? <Navigate to="/" /> : <RegisterPage />}
         />
 
+        {/* Các route sử dụng MainLayout (có Navbar và Footer chung) */}
         <Route
-          path="/register" // Route cho trang đăng ký
-          // Truyền props currentUser và onLogout nếu Navbar trên trang này cần
-          element={<RegisterPage currentUser={currentUser} onLogout={handleLogout} />}
-        />
-        
+          path="/*" // Bắt tất cả các route khác
+          element={
+            <MainLayout
+              isLoggedIn={isLoggedIn}
+              userName={userName}
+              isAdmin={isAdmin}
+              onLogout={handleLogout}
+            >
+              <Routes> {/* Routes lồng nhau cho nội dung chính bên trong MainLayout */}
+                <Route path="/" element={<HomePage />} />
+                {/* <Route path="/trending" element={<TrendingPage />} /> */}
+                {/* <Route
+                  path="/upload"
+                  element={isLoggedIn ? <UploadPage /> : <Navigate to="/login" replace />}
+                /> */}
 
+                {/* Ví dụ route chỉ dành cho admin */}
+                {isLoggedIn && isAdmin && (
+                  <Route path="/admin/users" element={<div>Admin Users Management Page</div>} />
+                  // <Route path="/admin/users" element={<AdminUsersPage />} />
+                )}
+
+                {/* Route mặc định nếu không khớp (trang 404) */}
+                <Route path="*" element={<div>404 - Page Not Found</div>} />
+              </Routes>
+            </MainLayout>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

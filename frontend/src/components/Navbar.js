@@ -67,21 +67,16 @@ function Navbar({ isLoggedIn, userName, isAdmin, onLogout }) {
               <>
                 {/* Hiển thị menu Quản lý nếu là admin */}
                 {isAdmin && (
-                  <li className="nav-item dropdown">
-                    <a
-                      className="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
+                  // Ví dụ cho một dropdown toggle
+                  <button
+                      className="nav-link dropdown-toggle btn btn-link text-decoration-none" // Thêm class để giống link
+                      type="button" // Quan trọng cho button
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
-                    >
+                      // style={{ background: 'none', border: 'none', padding: 0, color: 'inherit' }} // Hoặc inline style
+                  >
                       <i className="bi bi-gear-fill me-1"></i> Quản lý
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li><Link className="dropdown-item" to="/admin/users">...</Link></li>
-                      {/* ... các mục quản lý khác ... */}
-                    </ul>
-                  </li>
+                  </button>
                 )}
 
                 <li className="nav-item">
@@ -102,8 +97,16 @@ function Navbar({ isLoggedIn, userName, isAdmin, onLogout }) {
                     <i className="bi bi-person-circle me-1"></i> {userName || 'Tài khoản'}
                   </a>
                   <ul className="dropdown-menu">
-                    <li><Link className="dropdown-item" to="/my-gallery">Bộ sưu tập</Link></li>
-                    <li><Link className="dropdown-item" to="/profile/edit">Hồ sơ</Link></li>
+                    <li>
+                      <Link className="dropdown-item" to="/my-gallery">
+                      <i className="bi bi-images me-2"></i>   Bộ sưu tập
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/profile/edit">
+                       <i className="bi bi-person-badge-fill me-2"></i> Hồ sơ
+                      </Link>
+                    </li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
                       {/* Nút Đăng xuất gọi hàm handleLogoutClick */}

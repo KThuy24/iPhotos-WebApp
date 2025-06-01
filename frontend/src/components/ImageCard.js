@@ -1,52 +1,50 @@
-// src/components/ImageCard.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function ImageCard({ image }) {
-  // image là một object chứa thông tin: src, title, description, uploaderName, uploaderAvatar, uploaderProfileLink, timestamp, etc.
+function ImageCard({ image }) { // 'image' ở đây là 'imageForCard' từ HomePage
+  // const uploaderName = image.account?.username || image.account?.fullname || 'Người dùng ẩn danh';
+  // console.log("Image prop received by ImageCard:", image); // Giữ lại để debug nếu cần
+
   return (
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-white border-0 py-2">
         <div className="d-flex align-items-center">
-          <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId}`}>
+          {/* uploaderId phải có trong image prop để link này hoạt động */}
+          <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId || 'unknown-user'}`}>
             <img
-              src={image.uploaderAvatar || 'https://via.placeholder.com/40?text=User'}
-              alt={image.uploaderName}
-              className="rounded-circle me-2"
-              style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+              src={image.uploaderAvatar} // Sử dụng trực tiếp
+              alt={image.uploaderName}   // Sử dụng trực tiếp
+              className="rounded-circle me-2 uploader-avatar-custom"
             />
           </Link>
           <div>
-            <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId}`} className="fw-bold text-dark text-decoration-none">
-              {image.uploaderName || 'Người dùng ẩn danh'}
+            <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId || 'unknown-user'}`} className="fw-bold text-dark text-decoration-none">
+              {image.uploaderName}
             </Link>
-            <small className="d-block text-muted">{image.timestamp || 'Vài phút trước'}</small>
+            <small className="d-block text-muted">{image.timestamp}</small>
           </div>
         </div>
       </div>
 
       {/* Ảnh chính */}
-      <Link to={`/image/${image.id}`}>
+      <Link to={`/image/${image.id || 'default-image-id'}`}>
         <img
-          src={image.src || 'https://via.placeholder.com/600x400?text=Image'}
-          className="card-img-top"
-          alt={image.title || 'Hình ảnh'}
-          style={{ maxHeight: '500px', objectFit: 'cover' }}
+          src={image.src} // Sử dụng trực tiếp
+          className="card-img-top-custom"
+          alt={image.description || 'Hình ảnh'}
+          referrerPolicy="no-referrer"
         />
       </Link>
 
       <div className="card-body">
-        {image.title && <h5 className="card-title">{image.title}</h5>}
-        <p className="card-text text-muted">
-          {image.description || 'Không có mô tả.'}
-        </p>
+        {image.description && <h5 className="card-title">{image.description}</h5>}
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div className="btn-group">
             <button type="button" className="btn btn-sm btn-outline-primary">
-              <i className="bi bi-heart me-1"></i> Thích ({image.likes || 0})
+              <i className="bi bi-heart me-1"></i> Thích ({image.likes})
             </button>
             <button type="button" className="btn btn-sm btn-outline-secondary">
-              <i className="bi bi-chat-dots me-1"></i> Bình luận ({image.comments || 0})
+              <i className="bi bi-chat-dots me-1"></i> Bình luận ({image.comments})
             </button>
           </div>
           <small className="text-muted"><i className="bi bi-eye me-1"></i>{image.views || 0} lượt xem</small>
