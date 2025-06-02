@@ -116,7 +116,7 @@ function Navbar() {
                     <ul className="dropdown-menu">
                       <li>
                         <Link className="dropdown-item" to="/admin/accounts">
-                          <i className="bi bi-image me-2"></i> Tài khoản
+                          <i className="bi bi-person-square me-2"></i> Tài khoản
                         </Link>
                       </li>
                       <li>

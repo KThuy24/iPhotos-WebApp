@@ -3,58 +3,71 @@ import React, { useState, useEffect } from 'react';
 import ImageCard from '../components/ImageCard';
 import TrendingItem from '../components/TrendingItem';
 import Pagination from '../components/Pagination';
+import { useDispatch, useSelector } from 'react-redux';
+import { GetAllPhoto } from '../config/reuseAPI';
 
-// Dữ liệu giả lập (bạn sẽ fetch từ API)
-const mockFeedImages = [
-  {
-    id: '1',
-    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    title: 'Phong cảnh núi non hùng vĩ',
-    description: 'Một buổi chiều tuyệt đẹp tại dãy Alps. Không khí trong lành và cảnh quan làm say đắm lòng người.',
-    uploaderName: 'Alice Wonderland',
-    uploaderAvatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-    uploaderId: 'alice',
-    timestamp: '2 giờ trước',
-    likes: 152,
-    comments: 12,
-    views: 1024
-  },
-  {
-    id: '2',
-    src: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    title: 'Hồ nước xanh biếc',
-    description: 'Mặt hồ phẳng lặng như gương, phản chiếu bầu trời xanh ngắt. Một nơi lý tưởng để thư giãn.',
-    uploaderName: 'Bob The Explorer',
-    uploaderAvatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    uploaderId: 'bob',
-    timestamp: '5 giờ trước',
-    likes: 230,
-    comments: 25,
-    views: 2500
-  },
-  // Thêm nhiều ảnh giả lập khác
-];
+// // Dữ liệu giả lập (bạn sẽ fetch từ API)
+// const mockFeedImages = [
+//   {
+//     id: '1',
+//     src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+//     title: 'Phong cảnh núi non hùng vĩ',
+//     description: 'Một buổi chiều tuyệt đẹp tại dãy Alps. Không khí trong lành và cảnh quan làm say đắm lòng người.',
+//     uploaderName: 'Alice Wonderland',
+//     uploaderAvatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+//     uploaderId: 'alice',
+//     timestamp: '2 giờ trước',
+//     likes: 152,
+//     comments: 12,
+//     views: 1024
+//   },
+//   {
+//     id: '2',
+//     src: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+//     title: 'Hồ nước xanh biếc',
+//     description: 'Mặt hồ phẳng lặng như gương, phản chiếu bầu trời xanh ngắt. Một nơi lý tưởng để thư giãn.',
+//     uploaderName: 'Bob The Explorer',
+//     uploaderAvatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+//     uploaderId: 'bob',
+//     timestamp: '5 giờ trước',
+//     likes: 230,
+//     comments: 25,
+//     views: 2500
+//   },
+//   // Thêm nhiều ảnh giả lập khác
+// ];
 
-const mockTrendingImages = [
-  { id: '2', title: 'Hồ nước xanh biếc', thumbnailSrc: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 2500 },
-  { id: '3', title: 'Thành phố về đêm lung linh', thumbnailSrc: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 2200 },
-  { id: '4', title: 'Chú mèo đáng yêu', thumbnailSrc: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1143&q=80', views: 1980 },
-  { id: '1', title: 'Phong cảnh núi non hùng vĩ', thumbnailSrc: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 1024 },
-];
+// const mockTrendingImages = [
+//   { id: '2', title: 'Hồ nước xanh biếc', thumbnailSrc: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 2500 },
+//   { id: '3', title: 'Thành phố về đêm lung linh', thumbnailSrc: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 2200 },
+//   { id: '4', title: 'Chú mèo đáng yêu', thumbnailSrc: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1143&q=80', views: 1980 },
+//   { id: '1', title: 'Phong cảnh núi non hùng vĩ', thumbnailSrc: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80', views: 1024 },
+// ];
 
 
 function Home () { 
-  const [feedImages, setFeedImages] = useState([]);
+  const images = useSelector((state) => state.photo?.allPhoto?.photos) || [];
+  const dispatch = useDispatch();
   const [trendingImages, setTrendingImages] = useState([]);
+
+  const fetching = async () => {
+    try {
+      await GetAllPhoto(dispatch);
+    }catch(err){
+      console.log(err);
+    }
+  }
+  // Tính toán index ảnh theo trang
+  const [imageList, setImageList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Tính toán index ảnh theo trang
+  const finalImages = imageList.length > 0 ? imageList : images;
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentImages = feedImages.slice(startIndex, endIndex);
-
-  const totalPages = Math.ceil(feedImages.length / itemsPerPage);
+  const displayedImages = finalImages.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(imageList.length / itemsPerPage);
 
   //-------------------------------------------------------------//
   // Tự động scroll về đầu trang mỗi khi chuyển trang
@@ -64,15 +77,13 @@ function Home () {
 
   // tự động quay về trang đầu tiên mỗi khi search, filter hoặc tải lại api
   useEffect(() => {
-    setFeedImages(mockFeedImages);
-    setTrendingImages(mockTrendingImages);
+    setTrendingImages(displayedImages);
     setCurrentPage(1); // reset về trang đầu tiên
   }, []);
 
   // mount data khi truy cập trang home
   useEffect(() => {
-    setFeedImages(mockFeedImages);
-    setTrendingImages(mockTrendingImages);
+    fetching();
   }, []);
 
   return (
@@ -82,8 +93,8 @@ function Home () {
           {/* Phần feed ảnh chính (chiếm 3/4 không gian hoặc col-md-8, col-lg-9) */}
           <div className="col-lg-8 col-md-7"> {/* Thay đổi col-md-7 thành col-md-8 nếu muốn */}
             <h3 className="mb-3">Ảnh mới nhất</h3>
-            {currentImages.length > 0 ? (
-              currentImages.map(image => (
+            {displayedImages.length > 0 ? (
+              displayedImages.map(image => (
                 <ImageCard key={image.id} image={image} />
               ))
             ) : (
@@ -97,7 +108,7 @@ function Home () {
               {/* Giới thiệu (nếu có) */}
               <div className="card mb-4">
                 <div className="card-body">
-                  <h5 className="card-title">Giới thiệu PixelShare</h5>
+                  <h5 className="card-title">Giới thiệu iPhotos</h5>
                   <p className="card-text small text-muted">
                     Chào mừng bạn đến với chúng tôi đây là nơi chia sẻ những khoảnh khắc tuyệt vời qua ống kính.
                     Khám phá, tải lên và kết nối với cộng đồng yêu nhiếp ảnh!

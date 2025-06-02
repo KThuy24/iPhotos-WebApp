@@ -8,9 +8,9 @@ function ImageCard({ image }) {
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-white border-0 py-2">
         <div className="d-flex align-items-center">
-          <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId}`}>
+          <Link to={image.uploaderProfileLink || `/profile/${image.account._id}`}>
             <img
-              src={image.uploaderAvatar || 'https://via.placeholder.com/40?text=User'}
+              src={image.account.avatar || 'https://via.placeholder.com/40?text=User'}
               alt={image.uploaderName}
               className="rounded-circle me-2"
               style={{ width: '40px', height: '40px', objectFit: 'cover' }}
@@ -18,7 +18,7 @@ function ImageCard({ image }) {
           </Link>
           <div>
             <Link to={image.uploaderProfileLink || `/profile/${image.uploaderId}`} className="fw-bold text-dark text-decoration-none">
-              {image.uploaderName || 'Người dùng ẩn danh'}
+              {image.account.fullname || 'Người dùng ẩn danh'}
             </Link>
             <small className="d-block text-muted">{image.timestamp || 'Vài phút trước'}</small>
           </div>
@@ -28,7 +28,7 @@ function ImageCard({ image }) {
       {/* Ảnh chính */}
       <Link to={`/image/${image.id}`}>
         <img
-          src={image.src || 'https://via.placeholder.com/600x400?text=Image'}
+          src={image.url || 'https://via.placeholder.com/600x400?text=Image'}
           className="card-img-top"
           alt={image.title || 'Hình ảnh'}
           style={{ maxHeight: '500px', objectFit: 'cover' }}
