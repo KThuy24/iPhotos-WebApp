@@ -1,0 +1,1 @@
+export const ACCOUNT_API = 'http://localhost:5000/api/auth';

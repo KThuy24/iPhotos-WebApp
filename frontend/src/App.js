@@ -1,72 +1,76 @@
 // src/App.js
-import React, { useState, useEffect } from 'react'; // Thêm useState và useEffect
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import HomePage from './pages/HomePage';
-import RegisterPage from './pages/RegisterPage'; // Import trang đăng ký
+import "./App.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import PrivateRoute from "./components/auth/PrivateRoute.js";
+import Navbar from "./components/Navbar.js";
+import Footer from "./components/Footer.js";
+import Home from "./pages/Home.js";
+import Login from "./components/auth/Login.js";
+import Register from "./components/auth/Register.js"; // Import trang đăng ký
+import Profile from "./components/Profile.js";
+import ForgotPassword from "./components/auth/Forgot-password.js";
+import ResetPassword from "./components/auth/Reset-password.js";
 
+import AccountList from "./layouts/admin/AccountList.js";
+import User from "./layouts/user/user.layout.js";
+import AccountEdit from "./components/form/AccountEdit.js";
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-
-  // Hàm này sẽ được gọi từ Login.js sau khi đăng nhập thành công
-  const handleLoginSuccess = (userData) => {
-    console.log("App.js: User logged in successfully", userData);
-    setCurrentUser(userData);
-    // Lưu thông tin người dùng vào localStorage để duy trì đăng nhập
-    if (userData) { // Đảm bảo userData không phải là null/undefined
-        localStorage.setItem('userData', JSON.stringify(userData));
-    }
-  };
-
-  // Hàm này sẽ được gọi từ Navbar (thông qua HomePage) khi người dùng đăng xuất
-  const handleLogout = () => {
-    console.log("App.js: User logged out");
-    setCurrentUser(null);
-    // Xóa thông tin người dùng khỏi localStorage
-    localStorage.removeItem('userData');
-    // Việc chuyển hướng sau khi logout nên được xử lý bởi component gọi hàm logout
-    // ví dụ: Navbar sẽ dùng useNavigate để chuyển về /login
-  };
-
-  // useEffect sẽ chạy một lần khi component App được mount
-  // để kiểm tra xem có thông tin người dùng nào đã lưu trong localStorage không
-  useEffect(() => {
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      try {
-        const userData = JSON.parse(storedUserData);
-        setCurrentUser(userData);
-        console.log("App.js: User data loaded from localStorage:", userData);
-      } catch (error) {
-        console.error("App.js: Error parsing user data from localStorage", error);
-        // Nếu dữ liệu bị hỏng, xóa nó khỏi localStorage
-        localStorage.removeItem('userData');
-      }
-    }
-  }, []); // Mảng rỗng đảm bảo useEffect chỉ chạy một lần sau khi mount
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/login"
-          element={<Login onLoginSuccess={handleLoginSuccess} />}
-        />
-        <Route
-          path="/" // Route cho trang chủ
-          element={<HomePage currentUser={currentUser} onLogout={handleLogout} />}
-        />
-
-        <Route
-          path="/register" // Route cho trang đăng ký
-          // Truyền props currentUser và onLogout nếu Navbar trên trang này cần
-          element={<RegisterPage currentUser={currentUser} onLogout={handleLogout} />}
-        />
-        
-
-      </Routes>
-    </BrowserRouter>
+    <Router>
+      <div className="d-flex flex-column min-vh-100">
+        <Navbar />
+        <div className="container flex-grow-1 py-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* ---------- Các route yêu cầu đăng nhập ---------- */}
+            <Route 
+              path="/my-profile/edit/:id" 
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/admin/accounts" 
+              element={
+                <PrivateRoute>
+                  <AccountList />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/admin/account/edit/:id" 
+              element={
+                <PrivateRoute>
+                  <AccountEdit />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/user" 
+              element={
+                <PrivateRoute>
+                  <User />
+                </PrivateRoute>
+              } 
+            />
+          </Routes>
+          <ToastContainer />
+        </div>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
