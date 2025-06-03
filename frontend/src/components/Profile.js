@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 function Profile () {
     const currentAccount = useSelector((state) => state.auth.account?.data);
     const dispatch = useDispatch();
+    
     const [input, setInput] = useState({
         fullname: currentAccount?.fullname||"",
         email: currentAccount?.email||"",
@@ -83,7 +84,9 @@ function Profile () {
             style={{ maxWidth: "600px", width: "100%" }}
         >
             <Link to='/' style={{fontSize:'16px'}}>
-                <i>Trang chủ</i>
+                <button className="btn btn-outline-secondary">
+                    ← Quay lại
+                </button>
             </Link>
             <div className="card-body">
                 <form onSubmit={handleSubmit}>

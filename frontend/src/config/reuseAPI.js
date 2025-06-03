@@ -1,9 +1,10 @@
 // các api có thể sử dụng nhiều lần
 import axios from "axios";
-import { ACCOUNT_API, PHOTO_API } from "./api";
+import { ACCOUNT_API, COMMENT_API, PHOTO_API } from "./api";
 import { toast } from "react-toastify";
 import { Failed_Auth, GetAllAccount_Success, GetDetailAccount_Success, Loading_Auth } from "../redux/auth.Slice";
-import { Failed_Photo, GetAllPhoto_Success, Loading_Photo } from "../redux/photo.Slice";
+import { Failed_Photo, GetAllPhoto_Success, GetDetailPhoto_Success, Loading_Photo } from "../redux/photo.Slice";
+import { Failed_Comment, GetAllComment_Success, Loading_Comment } from "../redux/commentSlice";
 
 //------------------------GET ALL------------------------//
 export const GetAllAccount = async (dispatch) =>{
@@ -40,6 +41,22 @@ export const GetAllPhoto = async (dispatch) =>{
     }
 };
 
+export const GetAllComment = async (dispatch) =>{
+    try{
+        dispatch(Loading_Comment());
+        const res = await axios.get(`${COMMENT_API}/list`,{
+            headers:{
+                'Content-Type':'application/json'
+            },
+            withCredentials: true
+        });
+        dispatch(GetAllComment_Success(res.data));
+    }catch(err){
+        console.error(err);
+        toast.error(err.response?.data?.messsage);
+        dispatch(Failed_Comment(err));
+    }
+};
 
 //------------------------GET DETAIL------------------------//
 export const GetDetailAccount = async (dispatch,id) =>{
@@ -56,5 +73,22 @@ export const GetDetailAccount = async (dispatch,id) =>{
         console.error(err);
         toast.error(err.response?.data?.messsage);
         dispatch(Failed_Auth(err));
+    }
+};
+
+export const GetDetailPhoto = async (dispatch,id) =>{
+    try{
+        dispatch(Loading_Photo());
+        const res = await axios.get(`${PHOTO_API}/detail/${id}`,{
+            headers:{
+                'Content-Type':'application/json'
+            },
+            withCredentials: true
+        });
+        dispatch(GetDetailPhoto_Success(res.data));
+    }catch(err){
+        console.error(err);
+        toast.error(err.response?.data?.messsage);
+        dispatch(Failed_Photo(err));
     }
 };

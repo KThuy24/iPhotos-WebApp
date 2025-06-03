@@ -6,5 +6,6 @@ const storage = multer.memoryStorage(); // Sử dụng bộ nhớ để lưu tr�
 
 // Tạo middleware Multer
 const uploadImageProfile = multer({ storage }).single('avatar');
+const uploadImages = multer({ storage }).single('url');
 
-module.exports = {uploadImageProfile};
+module.exports = {uploadImageProfile, uploadImages};

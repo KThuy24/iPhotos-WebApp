@@ -1,16 +1,16 @@
 import React from "react";
 
-function User () {
+function MyGallery () {
     return (
       <div className="container">  
         <div className="card mt-3">
-          <div className="card-header">Trang web chia sẻ ảnh</div>
+          <div className="card-header">Bộ sư tập của tôi</div>
           <div className="card-body">
-            <p className="card-text">Trang chủ đang cập nhật.</p>
+            <p className="card-text">Trang bộ sưu tập đang cập nhật.</p>
           </div>
         </div>
       </div>
     );
 }
   
-export default User;
+export default MyGallery;

@@ -2,6 +2,9 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./auth.Slice.js";
 import photoReducer from "./photo.Slice.js";
+import albumReducer from "./album.Slice.js";
+import likeReducer from "./like.Slice.js";
+import commentReducer from "./commentSlice.js";
 
 import {
     //persistStore,
@@ -23,6 +26,9 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: authReducer,
     photo: photoReducer,
+    album: albumReducer,
+    like: likeReducer,
+    comment: commentReducer
 });
   
 const persistedReducer = persistReducer(persistConfig, rootReducer);

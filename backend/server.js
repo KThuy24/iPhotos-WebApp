@@ -13,19 +13,28 @@ require('dotenv').config();
 connectDB(); // chạy function kết nối mongoosedb trong config
 
 const app = express();
+//--------------------------------------------------------------//
 //Cấu hình cors
 app.use(cors({
-    origin: "http://localhost:3000", // Cho phép React frontend (localhost:3000) gọi API
-    methods: ["GET", "POST", "PUT", "DELETE"], // Cho phép các phương thức HTTP
-    credentials: true, // Nếu cần gửi cookie hoặc token
-  })
+  origin: "http://localhost:3000", // Cho phép React frontend (localhost:3000) gọi API
+  methods: ["GET", "POST", "PUT", "DELETE"], // Cho phép các phương thức HTTP
+  credentials: true, // Nếu cần gửi cookie hoặc token
+})
 );
 //--------------------------------------------------------------//
-app.use(express.urlencoded({extended:false}));
+app.use((req, res, next) => {
+  res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self'; img-src https://example.com; script-src 'self' 'unsafe-inline' https://apis.google.com"
+  );
+  next();
+});
+//--------------------------------------------------------------//
+app.use(express.json());
+app.use(express.urlencoded({extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(express.json());
+app.use(cookieParser()); 
 //-----------------------------ROUTER---------------------------------//
 app.use('/api/auth', accountRouter);
 app.use('/api/photo', photoRouter);
@@ -33,5 +42,5 @@ app.use('/api/album', albumRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/like', likeRouter);
 //--------------------------------------------------------------//
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Máy chủ đang chạy ở cổng ${PORT}`));

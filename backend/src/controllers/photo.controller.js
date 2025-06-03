@@ -1,5 +1,7 @@
 const Photo = require('../models/photo.model.js');
 const Album = require('../models/album.model.js');
+const getDataUri = require("../config/dataUri.js");
+const cloudinary = require("../config/cloudinary.js");
 
 // hàm tạo ảnh mới
 const createPhoto = async (req, res) => {
@@ -59,6 +61,84 @@ const createPhoto = async (req, res) => {
     }
 };
 
+// hàm cập nhật ảnh
+const updatePhoto = async (req, res) => {
+    try {
+        const accountId = req.user.id; // Lấy từ middleware auth
+        const photoId = req.params.id;
+        const { title, description, tags, visibility } = req.body;
+
+        // kiểm tra đã xác thực hay chưa
+        if(!accountId) {
+            return res.status(401).json({ 
+                success: false,
+                message: "Bạn chưa đăng nhập !" 
+            });
+        }
+
+        // kiểm tra đã xác thực hay chưa
+        if(!photoId) {
+            return res.status(404).json({ 
+                success: false,
+                message: "Ảnh không tồn tại !" 
+            });
+        }
+
+        const file = req.file;
+        let photoUrl = null;
+    
+        // kiểm tra sự tồn tại
+        const existingPhoto = await Photo.findById(photoId);
+        if (!existingPhoto) {
+            return res.status(404).json({ message: "Ảnh không tồn tại!" });
+        }
+
+        if (file) {
+            const fileUri = getDataUri(file);
+      
+            // Xóa ảnh cũ nếu có
+            const oldPhoto = existingPhoto.url?.[0];
+            if (oldPhoto) {
+              const publicId = oldPhoto.split('/').pop().split('.')[0];
+              await cloudinary.uploader.destroy(`${publicId}`);
+            }
+      
+            // Upload ảnh mới
+            const uploadResponse = await cloudinary.uploader.upload(fileUri.content);
+            if (uploadResponse) {
+                photoUrl = uploadResponse.secure_url;
+            }
+        }
+      
+        const updatedPhoto = photoUrl ? [photoUrl] : existingPhoto.url;
+        
+        // cập nhật thông tin tài khoản
+        const data = await Photo.findByIdAndUpdate(
+            photoId,
+            {
+                title,
+                description,
+                tags,
+                visibility,
+                url: updatedPhoto,
+            },
+            { new: true }
+        );
+    
+        // trả về kết quả
+        return res.status(200).json({
+            message: "Cập nhật ảnh thành công !",
+            data
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false,
+            message: "Lỗi cập nhật ảnh, vui lòng kiểm tra lại Server !", error 
+        });
+        console.log(error);
+    }
+};
+
 // hàm xóa ảnh
 const deletePhoto = async (req, res) => {
     try {
@@ -97,10 +177,34 @@ const deletePhoto = async (req, res) => {
     }
 };
 
+// hàm xử lý tăng lượt xem khi click vào xem chi tiết hình ảnh
+const increaseViewCount = async (req, res) => {
+    try {
+        const photo = await Photo.findById(req.params.id);
+        if (!photo) return res.status(404).json({ message: 'Không tìm thấy ảnh' });
+
+        // Cập nhật view (giả sử kiểu số)
+        const updated = await Photo.findByIdAndUpdate(req.params.id, {
+        views: photo.views + 1
+        }, { new: true });
+
+        res.status(200).json({ message: 'Đã tăng 1 lượt xem', photo: updated });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi tăng lượt xem",
+            error
+        });
+    }
+};
+
 // hàm lấy danh sách ảnh
 const allPhoto = async (req, res) => {
     try {
-        const photos = await Photo.find();
+        const photos = await Photo.find()
+        .populate('account','fullname avatar email username')
+        .populate('albums');
 
         if(!photos){
             return res.status(404).json({ 
@@ -127,7 +231,9 @@ const allPhoto = async (req, res) => {
 // hàm lấy thông tin chi tiết 1 ảnh
 const detailPhoto = async (req, res) => {
     try {
-        const photo = await Photo.findById(req.params.id);
+        const photo = await Photo.findById(req.params.id)
+        .populate('account','fullname avatar')
+        .populate('albums');;
 
         if(!photo){
             return res.status(404).json({ 
@@ -153,7 +259,9 @@ const detailPhoto = async (req, res) => {
 
 module.exports = {
     createPhoto,
+    updatePhoto,
     deletePhoto,
+    increaseViewCount,
     allPhoto,
     detailPhoto
 };

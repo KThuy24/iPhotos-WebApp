@@ -6,7 +6,7 @@ const accountSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true }, // email
     username: { type: String, unique: true, required: true }, // tên đăng nhập
     password: { type: String, required: true }, // mật khẩu
-    avatar: { type: String }, // ảnh đại diện,
+    avatar: { type: [String] }, // ảnh đại diện,
     role: { type: String, enum:['admin', 'user'], default: 'user'}, // quyền hạn
     activation: { type: Number, default: 1}, // kích hoạt
     createdAt:{ type: Date, default: Date.now } // thời gian tạo

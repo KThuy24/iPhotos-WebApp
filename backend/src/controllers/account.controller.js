@@ -74,10 +74,10 @@ const register = async (req, res) => {
 // hàm đăng nhập
 const login = async (req, res) => {
   try{
-    const { email, username, password } = req.body;
+    const { EmailorUsername, password } = req.body;
 
     // kiểm tra thông tin nhập, nếu thiếu thông tin sẽ thông báo
-    if ((!email && !username) || !password) {
+    if (!EmailorUsername || !password) {
       return res.status(404).json({
         success: false,
         message: "Vui lòng nhập email hoặc username và mật khẩu !"
@@ -87,8 +87,8 @@ const login = async (req, res) => {
     // kiểm tra email hoặc mật khẩu, nếu không tồn tại sẽ thông báo
     const account = await Account.findOne({ 
       $or: [
-        email ? { email: email } : null,
-        username ? { username: username } : null
+        { email: EmailorUsername },
+        { username: EmailorUsername }
       ].filter(Boolean) // loại bỏ null nếu thiếu
     });
     // kiểm tra sự tồn tại
@@ -273,7 +273,7 @@ const resetPassword = async (req, res) => {
 // hàm cập nhật thông tin tài khoản
 const updateAccount = async (req, res) => {
   try {
-    const { fullname, email, username, avatar} = req.body;
+    const { fullname, email, username, role, activation } = req.body;
     const accountId = req.params.id;
 
     // kiểm tra đã đăng nhập hay chưa
@@ -297,7 +297,7 @@ const updateAccount = async (req, res) => {
       const fileUri = getDataUri(file);
 
       // Xóa ảnh cũ nếu có
-      const oldAvatar = existingUser.avatar?.[0];
+      const oldAvatar = existingAccount.avatar?.[0];
       if (oldAvatar) {
         const publicId = oldAvatar.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(`${publicId}`);
@@ -310,25 +310,26 @@ const updateAccount = async (req, res) => {
       }
     }
 
-    const updatedAvatar = userURL ? [userURL] : existingUser.avatar;
+    const updatedAvatar = userURL ? [userURL] : existingAccount.avatar;
 
     // cập nhật thông tin tài khoản
-    const account = await Account.findByIdAndUpdate(
+    const data = await Account.findByIdAndUpdate(
       accountId,
       {
         fullname,
         email,
         username,
         avatar: updatedAvatar,
+        role,
+        activation
       },
       { new: true }
     ).select("-password");
 
     // trả về kết quả
     return res.status(200).json({
-      message: "Cập nhật thông tin tài khoản thành công !",
-      notification: "Cập nhật hồ sơ thành công !",
-      account
+      message: "Cập nhật hồ sơ thành công !",
+      data
     });
   } catch(error){
     res.status(500).json({ message: "Lỗi cập nhật thông tin tài khoản, vui lòng kiểm tra lại Server !", error });

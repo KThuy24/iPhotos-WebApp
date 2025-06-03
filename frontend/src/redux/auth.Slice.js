@@ -26,8 +26,6 @@ const authSlice = createSlice({
     DeleteAccount_Success:  (state) => {
       state.loading = false;
       state.success = true;
-      state.account = null;
-      state.isAuthenticated = false;
     },
     //--------ALL ACCOUNT--------//
     GetAllAccount_Success:  (state,action) => {

@@ -1,87 +1,84 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// src/pages/HomePage.js
-import React, { useState, useEffect } from 'react';
-import ImageCard from '../components/ImageCard';
-import TrendingItem from '../components/TrendingItem';
-import Pagination from '../components/Pagination';
-import { useDispatch, useSelector } from 'react-redux';
-import { GetAllPhoto } from '../config/reuseAPI';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Pagination from "../components/Pagination";
+import { GetAllPhoto } from "../config/reuseAPI";
+import ImageCard from "../components/ImageCard";
+import TrendingItem from "../components/TrendingItem";
 
-function Home () { 
-  const images = useSelector((state) => state.photo?.allPhoto?.photos) || [];
-  const dispatch = useDispatch();
-  const [trendingImages, setTrendingImages] = useState([]);
-  const [selectedTag, setSelectedTag] = useState(null);
+function TrendingPage () {
+    const images = useSelector((state) => state.photo?.allPhoto?.photos) || [];
+    const dispatch = useDispatch();
+    const [trendingImages, setTrendingImages] = useState([]);
+    const [selectedTag, setSelectedTag] = useState(null);
 
-  const fetching = async () => {
-    try {
-      await GetAllPhoto(dispatch);
-    }catch(err){
-      console.log(err);
+    const fetching = async () => {
+      try {
+        await GetAllPhoto(dispatch);
+      }catch(err){
+        console.log(err);
+      }
     }
-  }
 
-  const handleTagClick = (tag) => {
-    setSelectedTag(tag);
-    const filtered = images.filter(img =>
-      img.tags && img.tags.includes(tag)
-    );
-    setImageList(filtered);
-    setCurrentPage(1); // về trang đầu
-  };
+    const handleTagClick = (tag) => {
+      setSelectedTag(tag);
+      const filtered = trendingList.filter(img =>
+        img.tags && img.tags.includes(tag)
+      );
+      setTrendingList(filtered);
+      setCurrentPage(1); // về trang đầu
+    };
 
-  //-------------------------------------------------------------//
-  // Tính toán index ảnh theo trang
-  const [imageList, setImageList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+    //-------------------------------------------------------------//
+    // Tính toán index ảnh theo trang
+    const [trendingList, setTrendingList] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+  
+    const finalTrending= trendingList.length > 0 ? trendingList : images;
+  
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const displayedTrending = finalTrending.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(trendingList.length / itemsPerPage);  
 
-  const finalImages = imageList.length > 0 ? imageList : images;
+    // Tự động scroll về đầu trang mỗi khi chuyển trang
+    useEffect(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentPage]);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedImages = finalImages.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(imageList.length / itemsPerPage);  
-  //-------------------------------------------------------------//
+    // tự động quay về trang đầu tiên mỗi khi search, filter hoặc tải lại api
+    useEffect(() => {
+      setTrendingList(displayedTrending);
+      setTrendingImages(displayedTrending);
+      setCurrentPage(1); // reset về trang đầu tiên
+    }, []);
 
-  // Tự động scroll về đầu trang mỗi khi chuyển trang
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
-
-  // tự động quay về trang đầu tiên mỗi khi search, filter hoặc tải lại api
-  useEffect(() => {
-    setImageList(displayedImages);
-    setTrendingImages(displayedImages);
-    setCurrentPage(1); // reset về trang đầu tiên
-  }, []);
-
-  // mount data khi truy cập trang home
-  useEffect(() => {
-     fetching();
-  }, []);
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    // mount data khi truy cập trang home
+    useEffect(() => {
+        fetching();
+    }, []);
+    //-------------------------------------------------------------//
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <main className="container flex-grow-1 my-4"> {/* my-4: margin top/bottom */}
         <div className="row">
           {/* Phần feed ảnh chính (chiếm 3/4 không gian hoặc col-md-8, col-lg-9) */}
           <div className="col-lg-8 col-md-7"> {/* Thay đổi col-md-7 thành col-md-8 nếu muốn */}
-            <h3 className="mb-3">Ảnh mới nhất</h3>
+            <h3 className="mb-3 bi-fire" style={{color:'red'}}>  Xu hướng</h3>
             {selectedTag && (
               <button
                 className="btn btn-sm btn-outline-secondary mb-2"
                 onClick={() => {
                   setSelectedTag(null);
-                  setImageList([]);
+                  setTrendingList([]);
                   setCurrentPage(1);
                 }}
               >
                 Xoá lọc: #{selectedTag}
               </button>
             )}
-            {displayedImages.length > 0 ? (
-              displayedImages.map(image => (
+            {displayedTrending.length > 0 ? (
+              displayedTrending.map(image => (
                 <ImageCard key={image._id} image={image} />
               ))
             ) : (
@@ -156,8 +153,8 @@ function Home () {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
-    </div>
-  );
+      </div>
+    );
 }
-
-export default Home;
+  
+export default TrendingPage;

@@ -14,7 +14,7 @@ function AccountList () {
   const accountList = useSelector((state) => state.auth?.allAccount);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loading,setLoading] = useState(null);
+  const [loading, setLoading] = useState(null);
 
   const fetching = async () => {
     try{
@@ -68,7 +68,7 @@ function AccountList () {
   // Tính toán index ảnh theo trang
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentAccounts = accountList?.accounts?.slice(startIndex, endIndex);
+  const finalAccountList = accountList?.accounts?.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(accountList?.accounts?.length / itemsPerPage);
   
@@ -82,7 +82,7 @@ function AccountList () {
         } finally{
           setTimeout(() => {
             setLoading(false);
-          }, 1000);
+          }, 700);
         }
     }
     loadData();
@@ -96,9 +96,12 @@ function AccountList () {
         </div>
         <div className="card-body">
           {loading ? (
-            <p className="card-text text-center fs-6 text-muted">
-              Trang quản lý tài khoản đang cập nhật...
-            </p>
+            <div className="text-center mt-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-2">Đang tải danh sách tài khoản...</p>
+            </div>
           ) : (
             <div className="table-responsive">
               <table
@@ -118,8 +121,8 @@ function AccountList () {
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {currentAccounts?.length > 0 ? (
-                    currentAccounts.map((account, index) => (
+                  {finalAccountList?.length > 0 ? (
+                    finalAccountList.map((account, index) => (
                       <tr key={account.id}>
                         <td>{index + 1}</td>
                         <td>{account.fullname}</td>
@@ -136,20 +139,22 @@ function AccountList () {
                         </td>
                         <td>
                           <span
-                            className={`badge ${
-                              account.role === "admin"
-                                ? "bg-primary"
-                                : "bg-secondary"
-                            }`}
+                              style={{fontSize:'15px'}}
+                              className={`badge ${
+                                account.role === "admin"
+                                  ? "bg-primary"
+                                  : "bg-secondary"
+                              }`
+                            }
                           >
                             {account.role}
                           </span>
                         </td>
                         <td>
                           {account.activation === 1 ? (
-                            <span className="text-success">✅</span>
+                            <span className="text-success" style={{fontSize:'20px'}}>✅</span>
                           ) : (
-                            <span className="text-danger">❌</span>
+                            <span className="text-danger" style={{fontSize:'20px'}}>❌</span>
                           )}
                         </td>
                         <td>

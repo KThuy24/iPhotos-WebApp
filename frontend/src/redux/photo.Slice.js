@@ -15,6 +15,12 @@ const photoSlice = createSlice({
     Loading_Photo: (state) => {
       state.loading = true;
     },
+    //--------SET VIEW--------//
+    SetView_Success: (state,action) => {
+      state.loading = false;
+      state.success = true;
+      state.allPhoto = action.payload;
+    },
     //----------CREATE PHOTO----------//
     CreatePhoto_Success: (state, action) => {
         state.newPhoto = null;
@@ -58,6 +64,7 @@ const photoSlice = createSlice({
 
 export const {
     Loading_Photo,
+    SetView_Success,
     CreatePhoto_Success,
     UpdatePhoto_Success,
     DeletePhoto_Success,
