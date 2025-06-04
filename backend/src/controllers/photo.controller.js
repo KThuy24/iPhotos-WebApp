@@ -329,7 +329,52 @@ const myPhotosHandler = async (req, res) => {
     }
 };
 
+const searchPhotos = async (req, res) => {
+    try {
+        const searchQuery = req.query.query; // Lấy từ khóa tìm kiếm từ query string
 
+        if (!searchQuery || searchQuery.trim() === "") {
+            return res.status(400).json({
+                success: false,
+                message: "Vui lòng cung cấp từ khóa tìm kiếm."
+            });
+        }
+
+        // Tìm kiếm theo title (không phân biệt hoa thường)
+        const photos = await Photo.find({
+            $or: [ // Tìm kiếm trong nhiều trường
+                { title: { $regex: searchQuery, $options: 'i' } }, // 'i' for case-insensitive
+                { tags: { $regex: searchQuery, $options: 'i' } }, // Nếu tags là mảng các chuỗi
+                // { description: { $regex: searchQuery, $options: 'i' } } // Nếu muốn tìm trong description
+            ],
+            visibility: 'công khai' // Chỉ tìm ảnh công khai, hoặc tùy chỉnh logic này
+        })
+        .populate('account', 'fullname username avatar') // Populate thông tin người đăng
+        .sort({ createdAt: -1 }); // Sắp xếp theo mới nhất
+
+        if (!photos || photos.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: "Không tìm thấy ảnh nào phù hợp.",
+                photos: photos 
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Tìm thấy ${photos.length} ảnh.`,
+            photos: photos
+        });
+
+    } catch (error) {
+        console.error("Error searching photos:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi máy chủ khi tìm kiếm ảnh.",
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     createPhoto,
@@ -338,5 +383,6 @@ module.exports = {
     increaseViewCount,
     allPhoto,
     detailPhoto,
-    myPhotosHandler 
+    myPhotosHandler,
+    searchPhotos
 };

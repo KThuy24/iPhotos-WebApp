@@ -15,6 +15,11 @@ const photoSlice = createSlice({
     //bộ sưu tập
     userPhotos: null,
     loadingUserPhotos: false, // Loading state riêng cho userPhotos
+
+     // Thêm state cho tìm kiếm
+    searchResults: [],
+    loadingSearch: false,
+    errorSearch: null,
   },
   reducers: {
     //--------LOADING--------//
@@ -24,6 +29,10 @@ const photoSlice = createSlice({
       state.success = false; // Reset success khi bắt đầu operation mới
       state.error = null;    // Reset error
       state.uploadedPhoto = null; // Reset ảnh đã upload khi bắt đầu operation mới
+
+      //cho search 
+      state.loadingSearch = true;
+      state.errorSearch = null;
     },
     //--------SET VIEW--------//
     SetView_Success: (state,action) => {
@@ -103,6 +112,9 @@ const photoSlice = createSlice({
       state.success = false;
       state.error = action.payload;
       state.uploadedPhoto = null;
+
+      state.loadingSearch = false;
+      state.errorSearch = action.payload;
     },
 
      // -------- ACTION CHO UPLOAD ẢNH-------- //
@@ -122,7 +134,7 @@ const photoSlice = createSlice({
         }
     },
 
-     // --------THÊM: ACTIONS CHO USER PHOTOS-------- //
+     // ------- ACTIONS CHO USER PHOTOS-------- //
     Loading_User_Photos: (state) => {
       state.loadingUserPhotos = true;
       state.error = null; // Reset lỗi chung nếu có
@@ -136,6 +148,13 @@ const photoSlice = createSlice({
       state.loadingUserPhotos = false;
       state.userPhotos = null;
       state.error = action.payload; // Có thể lưu lỗi vào error chung hoặc một error state riêng
+    },
+   
+
+    SetSearchResults_Success: (state, action) => {
+      state.loadingSearch = false;
+      state.searchResults = action.payload; // action.payload là mảng các ảnh kết quả
+      state.errorSearch = null;
     },
 
   },
@@ -156,6 +175,7 @@ export const {
     Loading_User_Photos,
     GetUserPhotos_Success,
     GetUserPhotos_Failed,
+    SetSearchResults_Success,
 } = photoSlice.actions;
 
 export default photoSlice.reducer;

@@ -28,7 +28,7 @@ import TrendingPage from "./pages/TrendingPage.js";
 
 import UploadImage from "./layouts/user/UploadImage.js";
 import MyGallery from "./layouts/user/MyGallery.js";
-
+import SearchResultsPage from "./pages/SearchResultsPage"; 
 
 function App() {
   return (
@@ -115,6 +115,10 @@ function App() {
                   <MyGallery />
                 </PrivateRoute>
               }
+            />
+
+            <Route path="/search" 
+            element={<SearchResultsPage />} 
             />
             
           </Routes>

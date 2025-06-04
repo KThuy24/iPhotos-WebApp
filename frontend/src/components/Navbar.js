@@ -62,7 +62,7 @@ function Navbar() {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary custom-navbar">
-      <div className="container-fluid"> {/* Navbar content sẽ có lề */}
+      <div className="container"> {/* Navbar content sẽ có lề */}
         <Link className="navbar-brand" to="/">
           <i className="bi bi-camera-fill me-2"></i>
           iPhotos
