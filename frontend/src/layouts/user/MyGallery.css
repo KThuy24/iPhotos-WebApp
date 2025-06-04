@@ -1,0 +1,83 @@
+/* src/layouts/user/MyGallery.css */
+
+.my-gallery-container {
+  padding-top: 1.5rem; /* Khoảng cách từ Navbar */
+  padding-bottom: 3rem; /* Khoảng cách đến Footer */
+}
+
+.my-gallery-title {
+  font-size: 2.25rem; /* Kích thước tiêu đề lớn hơn một chút */
+  font-weight: 600; /* Độ đậm vừa phải */
+  color: #212529; /* Màu tối chính của Bootstrap */
+  margin-bottom: 0; /* Loại bỏ margin dưới mặc định của h1 nếu cần */
+}
+
+.my-gallery-title .badge {
+  font-size: 0.9rem; /* Kích thước badge nhỏ hơn */
+  font-weight: 500;
+  padding: 0.4em 0.7em;
+  vertical-align: middle; /* Căn badge với text */
+}
+
+/* Nút tải thêm ảnh */
+.my-gallery-container .btn-primary {
+  font-weight: 500;
+}
+.my-gallery-container .btn-primary .bi {
+  margin-right: 0.35rem;
+  vertical-align: text-bottom; /* Căn icon với text */
+}
+
+
+/* Phần hiển thị khi bộ sưu tập trống */
+.my-gallery-empty {
+  padding: 4rem 1rem; /* Tăng padding */
+  background-color: #f8f9fa; /* Nền sáng */
+  border-radius: 0.5rem; /* Bo góc */
+  margin-top: 2.5rem;
+  border: 1px solid #dee2e6; /* Border nhẹ */
+}
+
+.my-gallery-empty .display-1 { /* Icon lớn */
+  font-size: 5rem; /* Kích thước icon */
+}
+
+.my-gallery-empty h2 {
+  color: #343a40;
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.my-gallery-empty .lead {
+  color: #6c757d;
+  margin-bottom: 2rem; /* Tăng khoảng cách */
+  font-size: 1.1rem;
+}
+
+.my-gallery-empty .btn-success {
+  font-weight: 500;
+}
+.my-gallery-empty .btn-success .bi {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Spinner và thông báo lỗi */
+.my-gallery-container .spinner-border {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.my-gallery-container .alert {
+  padding: 1.5rem;
+}
+.my-gallery-container .alert-heading {
+  font-size: 1.5rem;
+}
+.my-gallery-container .alert .btn {
+  font-weight: 500;
+}
+.my-gallery-container .alert .btn .bi {
+  margin-right: 0.35rem;
+}

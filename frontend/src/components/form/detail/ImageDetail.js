@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../../utils/formatTimeAgo.ts"; 
 
 function ImageDetail () {
     const detailImage = useSelector((state) => state.photo?.detailPhoto?.photo);
     const [isLoading, setIsLoading] = useState(true);
-    
+    const navigate = useNavigate();
+
     useEffect(() => {
     if (detailImage && detailImage._id) {
         setTimeout(() => {
@@ -26,13 +27,15 @@ function ImageDetail () {
         );
     }
 
+    const handleGoBack = () => {
+        navigate(-1);
+    };
+
     return (
         <div className="col-lg-10 col-md-7 m-auto">
-            <Link to={'/admin/images'}>
-                <button className="btn btn-outline-secondary mt-3">
-                    ← Quay lại
-                </button>
-            </Link>
+            <button onClick={handleGoBack} className="btn btn-outline-secondary mt-3 mb-2">
+                ← Quay lại
+            </button>
             <div className="card mb-4 mt-2 shadow-sm">
                 {/* Thông tin người đăng */}
                 <div className="card-header bg-white border-0 py-2">

@@ -1,0 +1,90 @@
+/* src/components/MyImageCard.css */
+.my-image-card {
+  transition: box-shadow 0.2s ease-in-out;
+  border: 1px solid #e9ecef; /* Border nhẹ hơn */
+  border-radius: 0.375rem; /* Bo góc chuẩn Bootstrap */
+  background-color: #fff;
+}
+
+.my-image-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Bóng mờ nhẹ hơn khi hover */
+}
+
+.my-image-card-link {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.my-image-card-img {
+  width: 100%;
+  height: 220px; /* Có thể điều chỉnh chiều cao */
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.my-image-card-link:hover .my-image-card-img {
+  transform: scale(1.03);
+}
+
+/* Overlay (tùy chọn, có thể bỏ nếu không cần) */
+.my-image-card-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  display: flex;
+  align-items: flex-end; /* Đẩy nội dung xuống dưới */
+  padding: 0.75rem;
+  color: white;
+}
+
+.my-image-card-link:hover .my-image-card-overlay {
+  opacity: 1;
+}
+
+.my-image-card-overlay-content .bi {
+  margin-right: 0.3rem;
+}
+.my-image-card-overlay-content span {
+  margin-right: 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Card Body */
+.my-image-card-body {
+  padding: 1rem;
+}
+
+.my-image-card-body .card-title-body {
+  font-size: 1rem; /* Kích thước tiêu đề */
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem !important; /* Ghi đè mb-1 nếu cần */
+}
+
+.my-image-card-body .card-text-small {
+  font-size: 0.8rem;
+  color: #6c757d; /* Màu text-muted của Bootstrap */
+}
+.my-image-card-body .card-text-small .bi {
+  vertical-align: middle;
+}
+
+
+/* Card Footer for actions */
+.my-image-card-footer {
+  background-color: #f8f9fa; /* Nền sáng hơn cho footer */
+  border-top: 1px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between; /* Phân bố đều các nút */
+}
+
+.my-image-card-footer .btn {
+  font-size: 0.85rem; /* Kích thước chữ nút nhỏ hơn */
+  padding: 0.3rem 0.7rem;
+}

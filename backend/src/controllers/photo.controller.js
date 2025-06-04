@@ -7,59 +7,104 @@ const cloudinary = require("../config/cloudinary.js");
 const createPhoto = async (req, res) => {
     try {
         const accountId = req.user.id; // Lấy từ middleware auth
-        const { url, description, tags, visibility, albums, likes } = req.body;
+
+        // Lấy các trường text từ req.body
+        const { title, description, tags, visibility /*, albums, likes */ } = req.body; // Lấy title từ frontend
+
+        // Kiểm tra file đã được upload bởi Multer hay chưa
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Vui lòng chọn một file ảnh để tải lên."
+            });
+        }
+
         // kiểm tra đã xác thực hay chưa
-        if(!accountId) {
-            return res.status(401).json({ 
+        if (!accountId) {
+            return res.status(401).json({
                 success: false,
-                message: "Bạn chưa đăng nhập !" 
+                message: "Bạn chưa đăng nhập !"
             });
         }
-        // kiểm tra thông tin nhập
-        if(!url){
-            return res.status(401).json({ 
+        // kiểm tra thông tin nhập (title)
+        if (!title) { // Frontend gửi 'title', không phải 'url' trong req.body cho thông tin này
+            return res.status(400).json({ // Sửa status code thành 400 Bad Request
                 success: false,
-                message: "Vui lòng" 
+                message: "Vui lòng nhập tiêu đề cho ảnh!" // Sửa message
             });
         }
+
+        // Xử lý upload file lên Cloudinary
+        const fileUri = getDataUri(req.file); // req.file được cung cấp bởi multer
+        const myCloud = await cloudinary.uploader.upload(fileUri.content, {
+            folder: "iphoto_uploads", // Tên thư mục trên Cloudinary (tùy chọn)
+            // resource_type: "auto" // Hoặc "image"
+        });
+
+        if (!myCloud || !myCloud.secure_url) {
+            return res.status(500).json({
+                success: false,
+                message: "Lỗi khi tải ảnh lên Cloudinary."
+            });
+        }
+        const imageUrl = myCloud.secure_url; // URL của ảnh trên Cloudinary
+
+        // Xử lý tags từ chuỗi JSON (frontend gửi tags dưới dạng JSON string)
+        let parsedTags = [];
+        if (tags) {
+            try {
+                parsedTags = JSON.parse(tags);
+                if (!Array.isArray(parsedTags)) {
+                    parsedTags = [tags]; // Nếu parse không ra mảng, coi như 1 tag
+                }
+            } catch (e) {
+                // Nếu parse lỗi, có thể coi chuỗi đó là một tag duy nhất (tách bằng dấu phẩy nếu có)
+                parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+            }
+        }
+
 
         // thêm ảnh mới
         const newPhoto = new Photo({
             account: accountId,
-            url: url,
-        //   googlePhotoId: data.googlePhotoId || null,
+            url: [imageUrl], // Sử dụng URL từ Cloudinary
+            title: title,    // Sử dụng title từ req.body
             description: description || '',
-            tags: tags || [],
+            tags: parsedTags, // Sử dụng tags đã parse
             visibility: visibility || 'công khai',
-            albums: [],
-            likes: []
+            views: 0,        // Khởi tạo views
+            albums: [],      // Khởi tạo rỗng, xử lý album sau nếu cần
+            likes: []        // Khởi tạo rỗng
         });
-        
+
         const photo = await newPhoto.save();
 
-        // nếu có album thì đồng bộ
-        if (photo.albums && photo.albums.length > 0) {
-            await Promise.all(
-                photo.albums.map((albumId) =>
-                Album.findByIdAndUpdate(albumId, { $addToSet: { photos: photo._id } })
-            )
-            );
-            await Photo.findByIdAndUpdate(photo._id, { $addToSet: { albums: { $each: photo.albums } } });
-        }
+        // Logic đồng bộ album (nếu có trường 'albums' được gửi từ frontend và bạn muốn xử lý ngay)
+        // Hiện tại, form upload của chúng ta không gửi 'albums'
+        // if (req.body.albums && Array.isArray(req.body.albums) && req.body.albums.length > 0) {
+        //     await Promise.all(
+        //         req.body.albums.map((albumId) =>
+        //             Album.findByIdAndUpdate(albumId, { $addToSet: { photos: photo._id } })
+        //         )
+        //     );
+        //     await Photo.findByIdAndUpdate(photo._id, { $addToSet: { albums: { $each: req.body.albums } } });
+        // }
 
-        return res.status(201).json({
+        return res.status(201).json({ // 201 Created
             success: true,
-            message: 'Thêm ảnh thành công',
+            message: 'Ảnh đã được tải lên thành công!', // Sửa message
             photo: photo
         });
     } catch (error) {
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: "Lỗi thêm ảnh, vui lòng kiểm tra lại Server !", error 
+            message: "Lỗi khi tải ảnh lên, vui lòng kiểm tra lại Server !", // Sửa message
+            error: error.message // Gửi message lỗi cụ thể hơn
         });
         console.log(error);
     }
 };
+
 
 // hàm cập nhật ảnh
 const updatePhoto = async (req, res) => {
@@ -257,11 +302,41 @@ const detailPhoto = async (req, res) => {
     }
 };
 
+const myPhotosHandler = async (req, res) => {
+    try {
+        const accountId = req.user.id; 
+        if (!accountId) {
+            return res.status(401).json({ success: false, message: "Yêu cầu xác thực." });
+        }
+
+        const photos = await Photo.find({ account: accountId })
+                                .sort({ createdAt: -1 }) // Sắp xếp ảnh mới nhất lên đầu
+                                .populate('account', 'fullname username avatar') // Populate thông tin người dùng                             
+
+        return res.status(200).json({
+            success: true,
+            message: "Lấy ảnh của bạn thành công.",
+            photos: photos // Trả về mảng các đối tượng ảnh
+        });
+
+    } catch (error) {
+        console.error("Error fetching user photos:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi máy chủ khi lấy ảnh của bạn.",
+            error: error.message
+        });
+    }
+};
+
+
+
 module.exports = {
     createPhoto,
     updatePhoto,
     deletePhoto,
     increaseViewCount,
     allPhoto,
-    detailPhoto
+    detailPhoto,
+    myPhotosHandler 
 };

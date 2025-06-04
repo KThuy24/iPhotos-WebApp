@@ -128,7 +128,7 @@ function Navbar() {
                   </li>
                 )}
                 <li className="nav-item">
-                    <Link className="nav-link" to="/upload">
+                    <Link className="nav-link" to="/user/upload-image"> 
                         <i className="bi bi-cloud-arrow-up-fill me-1"></i> Tải ảnh lên
                     </Link>
                 </li>
@@ -147,7 +147,7 @@ function Navbar() {
                   <ul className="dropdown-menu dropdown-menu-end">
                     <li>
                       <Link className="dropdown-item d-flex align-items-center" to="/my-gallery">
-                        <i className="bi bi-image me-2"></i> Bộ sưu tập
+                        <i className="bi bi-images me-2"></i> Bộ sưu tập
                       </Link>
                     </li>
                     <li>

@@ -94,6 +94,11 @@ function ImageEdit() {
       });
     }
   }, [currentImage]);
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   //------------------------------------------------------------//
   return (
     <div
@@ -101,9 +106,11 @@ function ImageEdit() {
       style={{ maxWidth: "800px", width: "100%" }}
     >
       {" "}
-      {/* Tăng maxWidth một chút */}
-      <Link to="/admin/images" style={{ fontSize: "16px" }}>
-        <button className="btn btn-outline-secondary">← Quay lại</button>
+
+      <Link style={{ fontSize: "16px" }}>
+        <button onClick={handleGoBack} className="btn btn-outline-secondary mt-3 mb-2">
+          ← Quay lại
+        </button>
       </Link>
       <div className="card-body">
         <h2 className="card-title text-center mb-4">

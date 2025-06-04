@@ -11,5 +11,6 @@ router.put('/update/:id', authenticate, uploadImages, photoController.updatePhot
 router.delete('/delete/:id', authenticate, photoController.deletePhoto);
 router.get('/list', photoController.allPhoto);
 router.get('/detail/:id', photoController.detailPhoto);
+router.get('/my-photos', authenticate, photoController.myPhotosHandler);
 
 module.exports = router;

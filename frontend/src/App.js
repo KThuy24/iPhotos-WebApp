@@ -26,6 +26,10 @@ import ImageDetail from "./components/form/detail/ImageDetail.js";
 import ViewDetailImage from "./components/form/detail/ViewDetailImage.js";
 import TrendingPage from "./pages/TrendingPage.js";
 
+import UploadImage from "./layouts/user/UploadImage.js";
+import MyGallery from "./layouts/user/MyGallery.js";
+
+
 function App() {
   return (
     <Router>
@@ -77,7 +81,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-                        <Route
+            <Route
               path="/admin/image/detail/:id"
               element={
                 <PrivateRoute>
@@ -94,6 +98,25 @@ function App() {
                 </PrivateRoute>
               }
             />
+
+            <Route
+              path="/user/upload-image" 
+              element={
+                <PrivateRoute>
+                  <UploadImage />
+                </PrivateRoute>
+              }
+            />
+
+             <Route
+              path="/my-gallery" 
+              element={
+                <PrivateRoute>
+                  <MyGallery />
+                </PrivateRoute>
+              }
+            />
+            
           </Routes>
           <ToastContainer />
         </div>
